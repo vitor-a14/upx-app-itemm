@@ -18,14 +18,19 @@ export const HomeScreen = () =>{
         navigation.navigate('FilterScreen'); // Navegue para a tela "SetorSocial"
     };
 
+    const handleIndicatorScreenPress = () => {
+        navigation.navigate("IndicatorScreen", {navigation});
+    };
+
     return (
-        <View style={homeStyle.canva}>
-             
+        <View style={homeStyle.canva}>  
             <Image source={require("../../assets/logo-itemm.png")} style={homeStyle.image_canva}></Image>
+
             <ButtonsProps title={'Departamento Pessoal'}></ButtonsProps>
             <ButtonsProps title={'Setor Social'} onPress={handleSetorSocialPress}></ButtonsProps>
-            <ButtonsProps title={'Setor Pedagógico'} ></ButtonsProps>
+            <ButtonsProps title={'Setor Pedagógico'}></ButtonsProps>
 
+            <ButtonsProps title={'TESTE - IndicatorScreen'} onPress={handleIndicatorScreenPress}></ButtonsProps>
         </View>
     )
 }
