@@ -5,6 +5,7 @@ import { ProgressCircle } from 'react-native-svg-charts';
 import { Text, TouchableOpacity } from 'react-native';
 import axios from 'axios'
 import { configHttp } from '../../config';
+import { LoadModal } from '../filter/Modal/loadModal';
 
 const styles = StyleSheet.create({
     container: {
@@ -84,39 +85,36 @@ const styles = StyleSheet.create({
     }
 });
 
-const nomeAluno = 'NOME';
 
 const indicators = [
-    { value: 0.5, color: '#F0C808', label: 'Relacionamento Interpessoal' },  
-    { value: 0.2, color: '#DD1C1A', label: 'Participação' },  
-    { value: 0.15, color: '#0AD3FF', label: 'Cumprimento de Metas' }, 
-    { value: 0.1, color: '#F96900', label: 'Habilidade Técnica' },  
+   
 ];
 
-const StudentPieChart = () => {
+const StudentPieChart = (props) => {
+    
     const data = [
         {
-          key: indicators[0].label,
-          value: indicators[0].value * 100,
-          svg: { fill: indicators[0].color },
+          key: props.indicators[0].label,
+          value: props.indicators[0].value * 100,
+          svg: { fill: props.indicators[0].color },
         },
         {
-          key: indicators[1].label,
-          value: indicators[1].value * 100,
-          svg: { fill: indicators[1].color },
+          key: props.indicators[1].label,
+          value: props.indicators[1].value * 100,
+          svg: { fill: props.indicators[1].color },
         },
         {
-          key: indicators[2].label,
-          value: indicators[2].value * 100,
-          svg: { fill: indicators[2].color },
+          key: props.indicators[2].label,
+          value: props.indicators[2].value * 100,
+          svg: { fill: props.indicators[2].color },
         },
         {
-            key: indicators[3].label,
-            value: indicators[3].value * 100,
-            svg: { fill: indicators[3].color },
+            key: props.indicators[3].label,
+            value: props.indicators[3].value * 100,
+            svg: { fill: props.indicators[3].color },
         }
       ];
-    
+      console.log(data)
       return (
         <View style={styles.container}>
           <PieChart
@@ -130,14 +128,14 @@ const StudentPieChart = () => {
       );
 }
 
-const StudentProgressChart = () => {
+const StudentProgressChart = (props) => {
     return (
         <View style={styles.container}>
-            {indicators.map((item, index) => (
+            {props.indicators.map((item, index) => (
             <View  key={`legend-item-${index}`} style={styles.chartContainer}>
                 <ProgressCircle
                     style={styles.chart}
-                    progress={item.value}
+                    progress={parseFloat(item.value)}
                     progressColor={item.color}
                     backgroundColor={'#ECECEC'}
                     strokeWidth={12}
@@ -185,23 +183,25 @@ const ButtonsProps = (props) =>{
 const IndicatorScreen = ({ route, navigation }) => {
     const student = route.params.student;
     const [conjunto_notas, set_conjunto] = useState([])
-    const [notas, set_notas] = useState({
-        relacionamento: 0,
-        metas : 0,
-        habilidades : 0,
-        participacao: 0
-    })
+    const [modalload, setmodaload] = useState({ status: false, msg: "" }) //modal para o pop up de loadscreens
+    const [notas, set_notas] = useState([
+        {value: 0, color: '#F0C808', label: 'Relacionamento Interpessoal' },  
+        {value: 0, color: '#DD1C1A', label: 'Participação' },  
+        {value: 0, color: '#0AD3FF', label: 'Cumprimento de Metas' }, 
+        {value: 0, color: '#F96900', label: 'Habilidade Técnica' },  
+    ])
 
     useEffect(()=>{
+        setmodaload({status:true, msg:'carregando dados'})
         getAval(student.cr0bb_autonumber).
         then((res)=>{
             if(res.length === 0){
-                console.log('igual a 0')
                 alert('sem dados disponíveis');
                 navigation.navigate('FilterScreen')
             }
             set_conjunto(res)
-            console.log("\n\n\"" + res[0].cr0bb_participacao)
+            const max_nota = res.length * 2 // o maximo de nota é 2, entao se eu multiplicar por 2 os registros e o maxio que ele pode ter de nota
+            console.log(max_nota)
             const metas = res.reduce((acumulador, currentItem) => {
                 return acumulador + Number(currentItem.cr0bb_cumprimentodemetas);
               }, 0);
@@ -216,21 +216,24 @@ const IndicatorScreen = ({ route, navigation }) => {
             }, 0);
 
             console.log( metas, relacionamento, habilidades, participacao)
-            set_notas({
-                habilidades: habilidades,
-                relacionamento: relacionamento,
-                metas: metas,
-                participacao: participacao
-            })
+            set_notas([
+                {value: parseFloat(relacionamento/max_nota).toFixed(4), color: '#F0C808', label: 'Relacionamento Interpessoal' },  
+                {value:  parseFloat(participacao/max_nota).toFixed(4), color: '#DD1C1A', label: 'Participação' },  
+                {value:  parseFloat(metas/max_nota).toFixed(4), color: '#0AD3FF', label: 'Cumprimento de Metas' }, 
+                {value:  parseFloat(habilidades/max_nota).toFixed(4), color: '#F96900', label: 'Habilidade Técnica' }, 
+            ])
+            console.log(notas)
         })
+        setmodaload({status:false, msg:''})
         }, [])
 
 
     return (
         <View style={styles.viewStyle}>
+            <LoadModal status={modalload.status} msg={modalload.msg}></LoadModal>
             <StudentTitle nome={student.cr0bb_nome}/>
-            <StudentPieChart />
-            <StudentProgressChart />
+            <StudentPieChart  indicators={notas} />
+            <StudentProgressChart indicators={notas}/>
             <LegendCard />
             <ButtonsProps title={'Voltar'} onPress={() => navigation.navigate('Home')}></ButtonsProps>
         </View>
