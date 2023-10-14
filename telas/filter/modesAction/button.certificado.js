@@ -1,4 +1,4 @@
-import { ButtonSettingsMode } from "./ButtonsMode.Interface";
+import { IButtonsMode } from "./IButtonsMode";
 import * as FileSystem from 'expo-file-system';
 import { shareAsync } from 'expo-sharing';
 import { configHttp } from "../../../config";
@@ -20,7 +20,7 @@ class CertificadoFileds{
     }
 }
 
-export class ButtonCertificado extends ButtonSettingsMode{
+export class ButtonCertificado extends IButtonsMode{
 
     async execute_mode_funtion(student){
         console.log('====================================>', student['cr0bb_rg'], student['cr0bb_periodocontrato'], student['cr0bb_empresa']);
