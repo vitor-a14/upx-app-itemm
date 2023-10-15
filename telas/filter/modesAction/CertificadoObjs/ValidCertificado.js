@@ -3,7 +3,6 @@ import { configHttp } from "../../../../config"
 
 export class validCertificado{
     async valid(student_id, periodo_contrato) {
-        console.log('to aki poha');
       
         let [start_date, end_date] = String(periodo_contrato).split(' ');
         console.log(start_date, end_date);

@@ -27,6 +27,7 @@
     "react-native-modern-datepicker": "^1.0.0-beta.91",
     "react-native-svg": "13.4.0",
     "react-native-svg-charts": "^5.0.0",
+    "react-native-vector-icons": "^10.0.0",
     "react-native-web": "~0.19.6",
     "rn-fetch-blob": "^0.12.0"
   },
