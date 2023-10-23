@@ -9,8 +9,9 @@ import { LoadModal } from './Modal/loadModal';
 import { ButtonCertificado } from './modesAction/button.certificado';
 import { ButtonAval } from './modesAction/button.aval';
 import { ButtonIndicador } from './modesAction/button.indicador';
-import { ButtonPresenca } from './modesAction/button.presenca';
+import { ButtonPresenca, PresençaModalteste } from './modesAction/button.presenca';
 import { configHttp } from '../../config';
+import { Popup} from './Modal/presençaModal';
 
 //import RNFS from 'react-native-fs';
 const iconspath = {
@@ -24,6 +25,8 @@ export const FilterScreen = ({ navigation }) => {
   //modals
   const [modaldate, setmodaldate] = useState(false) //modal para o pop up de datas
   const [modalload, setmodaload] = useState({ status: false, msg: "" }) //modal para o pop up de loadscreens
+  const [modalpresenca, setmodalpresenca] = useState(false) //modal para o pop up de loadscreens
+
   //turmas option
   const [rawData, setrawData] = useState([]);//toodos os dados da req
   const [visibleData, setVisibleData] = useState([]);//so os dados que serao mostrado e aki que é aplicado os filtros
@@ -71,10 +74,19 @@ export const FilterScreen = ({ navigation }) => {
   }, []);
 
   //filtro para aplicar filtros
-  const applyfilters = () => {
+  const applyfilters = async () => {
+    setmodaload({status: true, msg: "filtrando dados"})
     let filter_itens = rawData
-    if (selectedDate) {
+    if (selectedDate !== "Data") {
       //fazer a logica de filtro de datas
+        let presence_of_day = await checkPresence(selectedDate)
+        filter_itens = filter_itens.filter((filt)=>{
+          for(let already_done of presence_of_day){
+            if(filt.cr0bb_autonumber === already_done.cr0bb_idaluno) return; 
+          }
+          return filt
+        })
+        console.log('\n\n\n\n'+ filter_itens)
     }
 
     if (selectedOption) {
@@ -91,14 +103,13 @@ export const FilterScreen = ({ navigation }) => {
     else {
       console.log()
     }
+    setmodaload({status: false, msg: ""})
 
     setVisibleData(filter_itens)
   }
 
   // Função para lidar com a seleção de uma data
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-  };
+  
 
   // Função para lidar com a seleção de uma opção no dropdown
   const handleOptionChange = (itemValue) => {//isso aki é o drop down da turma
@@ -108,31 +119,60 @@ export const FilterScreen = ({ navigation }) => {
 
   useEffect(() => {
     const execute_interface = async (estudante) => {
-      if (!mode) {
-        console.log('é null')
-        return
-      } else {
-        setmodaload({status:true, msg:'realizando ação'})
-        await mode.execute_mode_funtion(estudante, navigation)
-        setmodaload({status:false, msg:''})
+      try{
+        if (!mode) {
+          console.log('é null')
+          return
+        } else {
+          if (mode instanceof ButtonPresenca) {
+            const showPopup = async () => {
+              return new Promise((resolve) => {
+                // Renderize o componente Pop-up e forneça uma função para resolver a Promessa quando o usuário responder.
+                // Certifique-se de que o componente Pop-up tenha um mecanismo para coletar a resposta do usuário.
+                <Popup></Popup>
+                const popupResponse = false; // Substitua por lógica real
+          
+                // Resolva a Promessa com a resposta do pop-up
+                resolve(popupResponse);
+              }).then((response) => {
+
+              });
+            };
+          
+            // Chame showPopup() quando necessário, por exemplo:
+            showPopup();
+          }
+          setmodaload({status:true, msg:'realizando ação'})
+          await mode.execute_mode_funtion(estudante, navigation)
+          setmodaload({status:false, msg:''})
+  
+        }
       }
+      catch(err){
+        console.log(err)
+      }
+    
     }
     execute_interface(student)
     setStudent(null)
   }, [mode])
 
   useEffect(() => {//temos que usar isso pois o set é assincrono ai usamos o useEffect para ser observador da var selectedOption, quando ela mudar é exec a func abaixo
-    applyfilters()
+    applyfilters().then(()=>console.log('foi'))
   }, [selectedOption]);
 
-  const handleNameChange = (itemValue) => {
-    setSelectedName(itemValue);
-  };
+  useEffect(() => {//temos que usar isso pois o set é assincrono ai usamos o useEffect para ser observador da var selectedOption, quando ela mudar é exec a func abaixo
+    console.log("-------------->" + selectedDate)
+    applyfilters().then(()=>console.log('foi'))
+  }, [selectedDate]);
 
   useEffect(() => {//temos que usar isso pois o set é assincrono ai usamos o useEffect para ser observador da var selectedOption, quando ela mudar é exec a func abaixo
-    applyfilters()
+    applyfilters().then(()=>console.log('foi'))
   }, [selectName]);
 
+ const handleNameChange = (itemValue) => {
+    setSelectedName(itemValue);
+  };
   const modalcall = () => {
     console.log('modal foi chamado')
     setmodaldate(true)
@@ -151,8 +191,7 @@ export const FilterScreen = ({ navigation }) => {
 
     <ImageBackground source={require('../../assets/back-ground.png')} style={filterStyle.canva}>
       <LoadModal status={modalload.status} msg={modalload.msg}></LoadModal>
-
-      <DateModal status={modaldate} func={setmodaldate} datefilter={setSelectedDate} />
+      <DateModal status={modaldate} func={setmodaldate} onchange={setSelectedDate}/>
       
       <View style={filterStyle.canva_filter}>
         <View style={filterStyle.display_filter}>
@@ -254,6 +293,31 @@ const ButtonsModes = (props) => {
 
 
 
-
+async function checkPresence (someDate){
+  console.log('entrou aki')
+  try{
+    const [day, month, year] = someDate.split('/')
+    const param_date = new Date(year, month-1, day)
+    console.log(someDate)
+    const res = await axios.get(`http://${configHttp.url_base}/dataverse/avaliacao`)
+    console.log(param_date)
+    const data =  res.data.value.filter((filt)=>{
+      const partes = filt.cr0bb_datapresenca.split("/"); 
+      console.log(partes)
+      const dia = parseInt(partes[0], 10); 
+      const mes = parseInt(partes[1], 10); 
+      const ano = parseInt(partes[2], 10); 
+      const data = new Date(ano, mes - 1, dia); // Mês é base 0, então subtrai 1
+      console.log(data.getTime(), param_date.getTime())
+      return data.getTime() === param_date.getTime()
+    })
+    console.log("*****************"+data)
+    return data
+  }
+  catch(err){
+    console.log(err)
+    throw new Error('nao foi possivel fazer o filtro')
+  }
+}
 
 
