@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { PieChart } from 'react-native-svg-charts';
 import { ProgressCircle } from 'react-native-svg-charts';
-import { Text, TouchableOpacity } from 'react-native';
+import { ImageBackground, Text, TouchableOpacity } from 'react-native';
 import axios from 'axios'
 import { configHttp } from '../../config';
 import { LoadModal } from '../filter/Modal/loadModal';
@@ -13,14 +13,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#07A0C3',
+        backgroundColor: 'rgba(226,238,252, 225)',
         borderRadius: 26,
         padding: 15,
         margin: 15,
     },
     titleContainer: {
         justifyContent: 'center',
-        backgroundColor: '#07A0C3',
+        backgroundColor: 'rgba(226,238,252, 225)',
         borderRadius: 26,
         margin: 'auto',
         height: '10%',
@@ -28,13 +28,14 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 20,
+        fontWeight: 'bold',
         textAlign: 'center',
         height: '50%',
         margin: 'auto'
     },
     button: {
         justifyContent: 'center',
-        backgroundColor: '#07A0C3',
+        backgroundColor: 'rgba(226,238,252, 225)',
         borderRadius: 26,
         margin: 'auto',
         height: '8%',
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#07A0C3',
+        backgroundColor: 'rgba(226,238,252, 225)',
         borderRadius: 26,
         padding: 16,
         margin: 15,
@@ -82,16 +83,19 @@ const styles = StyleSheet.create({
     viewStyle: {
         height: '90%',
         top: '5%'
-    }
+    },
+    image: {
+        position: 'absolute',
+        width: '100%',
+        height: '110%'
+    },
 });
-
 
 const indicators = [
    
 ];
 
 const StudentPieChart = (props) => {
-    
     const data = [
         {
           key: props.indicators[0].label,
@@ -118,7 +122,7 @@ const StudentPieChart = (props) => {
       return (
         <View style={styles.container}>
           <PieChart
-            style={{ height: "200%", width: "200%" }}
+            style={{ height: "150%", width: "150%" }}
             data={data}
             innerRadius={'30%'}
             outerRadius={'70%'}
@@ -137,13 +141,13 @@ const StudentProgressChart = (props) => {
                     style={styles.chart}
                     progress={parseFloat(item.value)}
                     progressColor={item.color}
-                    backgroundColor={'#ECECEC'}
+                    backgroundColor={'rgba(185, 202, 198, 1)'}
                     strokeWidth={12}
                     cornerRadius={6}
                 >
                 </ProgressCircle>
                 <Text style={styles.progressChartLegend}>
-                    {item.value * 100 + '%'}
+                    {(item.value * 100).toFixed(2) + '%'}
                 </Text>
             </View>
             ))}
@@ -151,10 +155,10 @@ const StudentProgressChart = (props) => {
     );
 }
 
-const LegendCard = () => {
+const LegendCard = (props) => {
     return (
         <View style={styles.legendCard}>
-            {indicators.map((item) => (
+            {props.indicators.map((item) => (
                 <View style={styles.legendContainer}>
                     <ProgressCircle style={styles.legendItem} progress={1} progressColor={item.color} strokeWidth={40}/>
                     <Text style={styles.legendText}> {item.label} </Text>
@@ -229,13 +233,16 @@ const IndicatorScreen = ({ route, navigation }) => {
 
 
     return (
-        <View style={styles.viewStyle}>
-            <LoadModal status={modalload.status} msg={modalload.msg}></LoadModal>
-            <StudentTitle nome={student.cr0bb_nome}/>
-            <StudentPieChart  indicators={notas} />
-            <StudentProgressChart indicators={notas}/>
-            <LegendCard />
-            <ButtonsProps title={'Voltar'} onPress={() => navigation.navigate('Home')}></ButtonsProps>
+        <View>
+            <ImageBackground source={require('../../assets/back-ground.png')} resizeMode="cover" style={styles.image}></ImageBackground>
+            <View style={styles.viewStyle}>
+                <LoadModal status={modalload.status} msg={modalload.msg}></LoadModal>
+                <StudentTitle nome={student.cr0bb_nome}/>
+                <StudentPieChart indicators={notas} />
+                <StudentProgressChart indicators={notas}/>
+                <LegendCard indicators={notas}/>
+                <ButtonsProps title={'Voltar'} onPress={() => navigation.navigate('Home')}></ButtonsProps>
+            </View>
         </View>
     )
 }
@@ -251,7 +258,6 @@ const getAval = async (student_id)=>{
     let url = `http://${configHttp.url_base}/dataverse/avaliacao/${student_id}`
     let res = axios.get(url).
     then((res)=>{
-
         return res.data
     })
     .catch((err)=>{

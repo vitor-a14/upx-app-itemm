@@ -7,6 +7,10 @@ import { FilterScreen } from './telas/filter/filter_screen';
 import IndicatorScreen from './telas/indicatorScreen/IndicatorScreen';
 import { Login } from './telas/login/login';
 
+//login
+//usuario: User
+//senha: 123
+
 const Stack = createStackNavigator();
 
 export default function App() {
