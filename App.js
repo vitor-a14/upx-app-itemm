@@ -12,7 +12,7 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-    <Stack.Navigator initialRouteName="FilterScreen">
+    <Stack.Navigator initialRouteName="Login">
       
       <Stack.Screen name="Login" component={Login}  options={{
         headerShown: false, // Oculta o cabeçalho na tela "Home"

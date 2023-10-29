@@ -4,14 +4,16 @@ import { filterStyle } from './style_filter';
 import { Picker } from '@react-native-picker/picker';
 import axios from "axios"
 import { DateModal } from './Modal/dateModal';
-import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 import { LoadModal } from './Modal/loadModal';
 import { ButtonCertificado } from './modesAction/button.certificado';
 import { ButtonAval } from './modesAction/button.aval';
 import { ButtonIndicador } from './modesAction/button.indicador';
-import { ButtonPresenca, PresençaModalteste } from './modesAction/button.presenca';
+import { ButtonPresenca } from './modesAction/button.presenca';
 import { configHttp } from '../../config';
-import { Popup} from './Modal/presençaModal';
+import { PresencaModal } from './Modal/presencaModal';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+
 
 //import RNFS from 'react-native-fs';
 const iconspath = {
@@ -36,57 +38,84 @@ export const FilterScreen = ({ navigation }) => {
   const [selectName, setSelectedName] = useState('');
   //escolhas do cliente
   const [student, setStudent] = useState('');
-  const [mode, setMode] = useState()
+  const [mode, setMode] = useState(undefined)
   //
   //modes
 
   //Use Effects
   useEffect(() => {
-    console.log(`O valor do contador foi alterado para: ${student}`);
-
+    console.log(`useeffect studen:> ${student}`);
   }, [student]);
 
-  useEffect(() => {
-    const getTurmas = async () => {
-      setmodaload({ status: true, msg: "Carregando dados" })
-      let url = `http://${configHttp.url_base}/dataverse/alunos`
-      let res = await axios.get(url).then(
-        (res) => {
-          return res.data
+  const getdata = async () => {
+    setmodaload({ status: true, msg: "Carregando dados" })
+    let url = `http://${configHttp.url_base}/dataverse/alunos`
+    let res = await axios.get(url).then(
+      (res) => {
+        return res.data
+      }
+    )
+      .catch(
+        () => {
+          alert('falha ao carregar os dados tente novamente')
+          setmodaload({ status: false, msg: '' })
+          throw new Error('nao foi possivel conseguir os dados')
         }
       )
-        .catch(
-          () => {
-            alert('falha ao carregar os dados tente novamente')
-            setmodaload({ status: false, msg: '' })
-            throw new Error('nao foi possivel conseguir os dados')
-          }
-        )
-      console.log(res)
-      let { value } = res
-      setrawData(value)
-      //console.log(rawData)
-      setVisibleData(value)
-      setmodaload({ status: false, msg: "" })
+    let { value } = res
+    setrawData(value)
+    //console.log(rawData)
+    setVisibleData(value)
+    setmodaload({ status: false, msg: "" })
+  }
 
-    }
-    getTurmas();
-  }, []);
+  useEffect(() => {
+    (async () => {
+      await getdata();
+    })();
+    }, []);
 
   //filtro para aplicar filtros
   const applyfilters = async () => {
     setmodaload({status: true, msg: "filtrando dados"})
-    let filter_itens = rawData
+    //await getdata()
+    let filter_itens = [...rawData]
+
     if (selectedDate !== "Data") {
       //fazer a logica de filtro de datas
         let presence_of_day = await checkPresence(selectedDate)
+       // console.log('precense' + presence_of_day.length)
         filter_itens = filter_itens.filter((filt)=>{
           for(let already_done of presence_of_day){
-            if(filt.cr0bb_autonumber === already_done.cr0bb_idaluno) return; 
+            let status = false
+            if(filt.cr0bb_autonumber === already_done.cr0bb_idaluno){
+              if(already_done.cr0bb_presenca === "true"){
+                filt['status'] = {presenca: true}
+                if(  already_done.cr0bb_cumprimentodemetas === null ||
+                  already_done.cr0bb_presenca === null ||
+                  already_done.cr0bb_habilidadestecnicas === null ||
+                  already_done.cr0bb_participacao === null){
+                  filt['status'] = {presenca: true, aval : false}
+                }
+                else{
+                  filt['status'] = {presenca: true, aval : true}
+                }
+                status = true
+                break
+              }
+              else{
+                filt['status'] = {presenca: false}
+                status = true
+                break
+              }
+            }
+            if(!status) filt['status'] = {presenca: undefined} 
+
           }
+          //console.log(filt)
           return filt
         })
-        console.log('\n\n\n\n'+ filter_itens)
+        console.log(filter_itens[0])
     }
 
     if (selectedOption) {
@@ -124,28 +153,14 @@ export const FilterScreen = ({ navigation }) => {
           console.log('é null')
           return
         } else {
-          if (mode instanceof ButtonPresenca) {
-            const showPopup = async () => {
-              return new Promise((resolve) => {
-                // Renderize o componente Pop-up e forneça uma função para resolver a Promessa quando o usuário responder.
-                // Certifique-se de que o componente Pop-up tenha um mecanismo para coletar a resposta do usuário.
-                <Popup></Popup>
-                const popupResponse = false; // Substitua por lógica real
-          
-                // Resolva a Promessa com a resposta do pop-up
-                resolve(popupResponse);
-              }).then((response) => {
-
-              });
-            };
-          
-            // Chame showPopup() quando necessário, por exemplo:
-            showPopup();
+          if(mode instanceof ButtonPresenca){
+            await mode.execute_mode_funtion(estudante, navigation, true , selectedDate)
+            await applyfilters()
+            return
           }
           setmodaload({status:true, msg:'realizando ação'})
           await mode.execute_mode_funtion(estudante, navigation)
           setmodaload({status:false, msg:''})
-  
         }
       }
       catch(err){
@@ -153,17 +168,17 @@ export const FilterScreen = ({ navigation }) => {
       }
     
     }
-    execute_interface(student)
-    setStudent(null)
+    execute_interface(student).then(()=> setStudent(undefined))
   }, [mode])
 
   useEffect(() => {//temos que usar isso pois o set é assincrono ai usamos o useEffect para ser observador da var selectedOption, quando ela mudar é exec a func abaixo
-    applyfilters().then(()=>console.log('foi'))
+   applyfilters().then(()=>console.log('foi'))
   }, [selectedOption]);
 
   useEffect(() => {//temos que usar isso pois o set é assincrono ai usamos o useEffect para ser observador da var selectedOption, quando ela mudar é exec a func abaixo
     console.log("-------------->" + selectedDate)
-    applyfilters().then(()=>console.log('foi'))
+    getdata().then(applyfilters)
+    //applyfilters().then(()=>console.log('foi'))
   }, [selectedDate]);
 
   useEffect(() => {//temos que usar isso pois o set é assincrono ai usamos o useEffect para ser observador da var selectedOption, quando ela mudar é exec a func abaixo
@@ -191,8 +206,11 @@ export const FilterScreen = ({ navigation }) => {
 
     <ImageBackground source={require('../../assets/back-ground.png')} style={filterStyle.canva}>
       <LoadModal status={modalload.status} msg={modalload.msg}></LoadModal>
+      
       <DateModal status={modaldate} func={setmodaldate} onchange={setSelectedDate}/>
       
+      <PresencaModal date={selectedDate} aluno={student} status={modalpresenca} ok={setMode} reject={setmodalpresenca}></PresencaModal>
+
       <View style={filterStyle.canva_filter}>
         <View style={filterStyle.display_filter}>
           <View style={filterStyle.button_dividido}>
@@ -236,18 +254,31 @@ export const FilterScreen = ({ navigation }) => {
       <View style={filterStyle.ScrollView_canva}>
         <ScrollView style={filterStyle.canva_result}>
           {
-            visibleData.map((option, index) => (
-              <TouchableOpacity Item key={index} style={[
-                filterStyle.display_results,
-                student === option ? { backgroundColor: 'rgba(89, 123, 237, 193)' } : 'rgba(226,238,252, 225)'
-              ]} onPress={() => {
-                if(student === option) return setStudent('');
-                setStudent(option)//seleciono o aluno
-              }
-              }>
-                <Text>{option.cr0bb_nome + "\n" + option.cr0bb_rg}</Text>
-              </TouchableOpacity>
-            ))}
+      visibleData.map((option, index) => (
+        <TouchableOpacity
+          key={index}
+          style={[
+            filterStyle.display_results,
+            student === option ? { backgroundColor: 'rgba(89, 123, 237, 193)' } : 'rgba(226,238,252, 225)'
+          ]}
+          onPress={() => {
+            if (student === option) return setStudent('');
+            setStudent(option); // selecione o aluno
+          }}
+        >
+          <Text>{option.cr0bb_nome + "\n" + option.cr0bb_rg}</Text>
+          <View style={filterStyle.canva_icon}>
+          {
+          option.status?.presenca !== undefined && (
+            <Icon name="user" color={colorHandle(option.status?.presenca)} size={20} />
+          )}
+          {
+            option.status?.aval !== undefined &&(
+          <Icon name='circle' color={colorHandle(option.status?.aval)}></Icon>
+          )}
+          </View>
+        </TouchableOpacity>
+      ))}
         </ScrollView>
       </View>
       {
@@ -265,7 +296,8 @@ export const FilterScreen = ({ navigation }) => {
             setMode(new ButtonIndicador())
           }}></ButtonsModes>
           <ButtonsModes src={iconspath.presenca} mode={() => {
-            setMode(new ButtonPresenca())
+            if(selectedDate === 'Data') return alert('é preciso informar a data para fazer a chamada')
+            setmodalpresenca(true)            
           }}></ButtonsModes>
         </View>
       }
@@ -278,9 +310,6 @@ export const FilterScreen = ({ navigation }) => {
 
 
 const ButtonsModes = (props) => {
-  const funcs = () => {
-    props.mode
-  }
   return (
     <View style={filterStyle.canva_hidde_button}>
       <TouchableOpacity onPress={props.mode} style={filterStyle.buttons_mode}>
@@ -311,7 +340,7 @@ async function checkPresence (someDate){
       console.log(data.getTime(), param_date.getTime())
       return data.getTime() === param_date.getTime()
     })
-    console.log("*****************"+data)
+    console.log(data)
     return data
   }
   catch(err){
@@ -320,4 +349,11 @@ async function checkPresence (someDate){
   }
 }
 
+const colorHandle = (status) =>{
+  console.log('\n\n\n ', status)
+  if(status === true){
+    return 'green'
+  }
+    return "red"
+}
 

@@ -7,6 +7,10 @@ export const filterStyle = StyleSheet.create({
     paddingTop: '15%',
     
     },
+    canva_icon:{
+        display:"flex",
+        flexDirection: 'row'
+    },
     canva_filter:{
         display: 'flex',        
         flexDirection: "row",
