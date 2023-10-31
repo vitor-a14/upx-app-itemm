@@ -1,31 +1,21 @@
-import { ButtonSettingsMode } from "./ButtonsMode.Interface";
+import { IButtonsMode } from "./IButtonsMode";
 import * as FileSystem from 'expo-file-system';
 import { shareAsync } from 'expo-sharing';
 import { configHttp } from "../../../config";
+import { CertificadoFileds } from "./CertificadoObjs/CertificadoField";
+import { validCertificado } from "./CertificadoObjs/ValidCertificado";
 
 
-class CertificadoFileds{
-    RG
-    dataInicio
-    dataFinal
-    empresa
-    
-    constructor(rg, contrato , empresa){
-        this.RG = rg
-        let date_array = String(contrato).split(' ')
-        this.dataInicio = date_array[0]
-        this.dataFinal = date_array[1]
-        this.empresa = empresa
-        console.log(this.dataFinal, this.dataInicio, this.RG)
-    }
-}
 
-export class ButtonCertificado extends ButtonSettingsMode{
-
+export class ButtonCertificado extends IButtonsMode{
+    validCertificado = new validCertificado()
     async execute_mode_funtion(student){
         console.log('====================================>', student['cr0bb_rg'], student['cr0bb_periodocontrato'], student['cr0bb_empresa']);
+        console.log(student['cr0bb_autonumber'], student['cr0bb_periodocontrato'])
+        let valid = await this.validCertificado.valid(student['cr0bb_autonumber'], student['cr0bb_periodocontrato'])
+        if(!valid) return alert('não é possivel ainda gerar certificado para o aluno ' + student['cr0bb_nome']);
+        console.log('pode gerar o certificado')
         await this.dowload(new CertificadoFileds(student['cr0bb_rg'], student['cr0bb_periodocontrato'], student['cr0bb_empresa']));
-        
     }
 
     async save(uri, filename, mimetype){

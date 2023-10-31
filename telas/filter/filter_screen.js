@@ -20,7 +20,7 @@ const iconspath = {
   presenca: require('../../assets/presenca.png')
 }
 
-export const FilterScreen = () => {
+export const FilterScreen = ({ navigation }) => {
   //modals
   const [modaldate, setmodaldate] = useState(false) //modal para o pop up de datas
   const [modalload, setmodaload] = useState({ status: false, msg: "" }) //modal para o pop up de loadscreens
@@ -107,15 +107,17 @@ export const FilterScreen = () => {
   };
 
   useEffect(() => {
-    const execute_interface = async () => {
+    const execute_interface = async (estudante) => {
       if (!mode) {
         console.log('é null')
         return
       } else {
-        await mode.execute_mode_funtion(student)
+        setmodaload({status:true, msg:'realizando ação'})
+        await mode.execute_mode_funtion(estudante, navigation)
+        setmodaload({status:false, msg:''})
       }
     }
-    execute_interface()
+    execute_interface(student)
     setStudent(null)
   }, [mode])
 
@@ -151,10 +153,9 @@ export const FilterScreen = () => {
       <LoadModal status={modalload.status} msg={modalload.msg}></LoadModal>
 
       <DateModal status={modaldate} func={setmodaldate} datefilter={setSelectedDate} />
-
-      <View style={[filterStyle.canva_filter, { marginTop: 40 }]}>
+      
+      <View style={filterStyle.canva_filter}>
         <View style={filterStyle.display_filter}>
-          {/* Campo de entrada de dropdown tavleze mudar de flex para grid*/}
           <View style={filterStyle.button_dividido}>
             <Picker
               selectedValue={selectedOption}
@@ -162,14 +163,13 @@ export const FilterScreen = () => {
               style={filterStyle.button_piecker}
             >
               {/*default option do select enabled={false}*/}
-              <Picker.Item label="Turma" value="" />
+              <Picker.Item label="Turmas" value="" />
               {renderPickerItems(rawData)}
             </Picker>
 
           </View>
         </View>
-        {/* Botão para aplicar o filtro */}
-
+        
         <View style={filterStyle.display_filter}>
           {/* Campo de entrada de data */}
           <TouchableOpacity
@@ -180,9 +180,9 @@ export const FilterScreen = () => {
             <Text>{selectedDate}</Text>
           </TouchableOpacity>
         </View>
+      </View>       
+      {/*canva do header dois campos de cima*/}
 
-
-      </View>
       <View style={filterStyle.name_filter}>
         <TextInput
           placeholder="Nome do Estudante"
@@ -192,16 +192,18 @@ export const FilterScreen = () => {
             handleNameChange(option)
           }}
         />
-
       </View >
 
       <View style={filterStyle.ScrollView_canva}>
         <ScrollView style={filterStyle.canva_result}>
           {
             visibleData.map((option, index) => (
-              <TouchableOpacity Item key={index} style={filterStyle.display_results} onPress={() => {
+              <TouchableOpacity Item key={index} style={[
+                filterStyle.display_results,
+                student === option ? { backgroundColor: 'rgba(89, 123, 237, 193)' } : 'rgba(226,238,252, 225)'
+              ]} onPress={() => {
+                if(student === option) return setStudent('');
                 setStudent(option)//seleciono o aluno
-                pick(option, mode, setmodaload)
               }
               }>
                 <Text>{option.cr0bb_nome + "\n" + option.cr0bb_rg}</Text>
@@ -210,16 +212,15 @@ export const FilterScreen = () => {
         </ScrollView>
       </View>
       {
-        student &&
-        <View style={[filterStyle.canva_botton_buttons, { marginTop: 10 }]} >
+        student //se tiver student aparece os botoes
+        &&
+        <View style={filterStyle.canva_botton_buttons} >
           <ButtonsModes src={iconspath.avaliacao} mode={() => {
             setMode(new ButtonAval())
-
           }}></ButtonsModes>
           {/*func={()=>dowload(setmodaload)}*/}
           <ButtonsModes src={iconspath.certificado} mode={() => {
             setMode(new ButtonCertificado())
-
           }}  ></ButtonsModes>
           <ButtonsModes src={iconspath.indicador} mode={() => {
             setMode(new ButtonIndicador())
@@ -235,16 +236,6 @@ export const FilterScreen = () => {
   );
 };
 
-const pick = async (person_infos, mode, setmodalload) => {
-  try {
-    let event = new EventEmitter();
-
-  }
-  catch (err) {
-    console.log(err)
-  }
-  // alert(person_infos.cr0bb_nome + "   " + person_infos.cr0bb_turma )
-};
 
 
 const ButtonsModes = (props) => {

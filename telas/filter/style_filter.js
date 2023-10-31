@@ -2,17 +2,17 @@ import { StyleSheet } from "react-native";
 
 export const filterStyle = StyleSheet.create({
     canva:{
-        flex: 1,
+    flex: 1,
     resizeMode: 'center', // ou 'contain' para ajustar a imagem ao conteúdo
-    justifyContent: 'center', // Ajuste conforme necessário
-    alignItems: 'center', // Ajuste conforme necessário
+    paddingTop: '15%',
+    
     },
     canva_filter:{
         display: 'flex',        
         flexDirection: "row",
         justifyContent: 'center',
         alignItems: 'flex-start',
-        marginBottom:10
+        marginBottom:'3%'
     },
     display_filter:{
         display: "flex",
@@ -71,8 +71,11 @@ export const filterStyle = StyleSheet.create({
         
     },
     canva_botton_buttons:{
+        marginTop:'5%',
         display: 'flex',        
         flexDirection: "row",
+        justifyContent:'center',
+        alignItems:'center'
     },
     ScrollView_canva:{
         width:"100%",

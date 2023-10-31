@@ -3,8 +3,7 @@ import { homeStyle } from "./style_home"
 import { useNavigation } from "@react-navigation/native";
 
 
-export const HomeScreen = () =>{
-    const navigation = useNavigation(); // Obtenha o objeto de navegação
+export const HomeScreen = ({navigation}) =>{
 
     const handleDepartamentoPessoalPress = () => {
     // Lógica para a tela "Departamento Pessoal"
@@ -18,14 +17,13 @@ export const HomeScreen = () =>{
         navigation.navigate('FilterScreen'); // Navegue para a tela "SetorSocial"
     };
 
+
     return (
-        <View style={homeStyle.canva}>
-             
+        <View style={homeStyle.canva}>  
             <Image source={require("../../assets/logo-itemm.png")} style={homeStyle.image_canva}></Image>
             <ButtonsProps title={'Departamento Pessoal'}></ButtonsProps>
             <ButtonsProps title={'Setor Social'} onPress={handleSetorSocialPress}></ButtonsProps>
-            <ButtonsProps title={'Setor Pedagógico'} ></ButtonsProps>
-
+            <ButtonsProps title={'Setor Pedagógico'}></ButtonsProps>
         </View>
     )
 }
