@@ -1,10 +1,10 @@
 import { View, Image, TextInput, TouchableOpacity, Text} from "react-native"
 import { LoginStyles } from "./login.style"
 import Icon from 'react-native-vector-icons/FontAwesome';
-import axios from "axios"
 import { useState } from "react";
 import { LoadModal } from "../filter/Modal/loadModal";
-
+import { configHttp } from "../../config";
+import axios from "axios"
 export const Login =({navigation}) =>{
     const [modalload, setmodaload] = useState({ status: false, msg: "" }) //modal para o pop up de loadscreens
 
@@ -66,7 +66,7 @@ export const Login =({navigation}) =>{
 const makeRequest = async (user, pass, navigator, setmodal) => {
     try{
         setmodal({status: true, msg:'Processando os dados'})
-        let res = await axios.post("http://192.168.100.10:3000/dataverse/login/", {
+        let res = await axios.post(`http://${configHttp}/dataverse/login`, {
             user: user,
             password: pass
         })
@@ -74,7 +74,8 @@ const makeRequest = async (user, pass, navigator, setmodal) => {
         navigator.navigate('Home')
     }
     catch(err){
-        alert(`Falha ao login: ${err.response.data.message}`)
+      console.log(err)
+        alert(`Falha ao login: Usuario ou senha errados`)
     }
     setmodal({status: false, msg:''})
 }
