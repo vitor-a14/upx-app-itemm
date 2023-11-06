@@ -6,6 +6,11 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { FilterScreen } from './telas/filter/filter_screen';
 import IndicatorScreen from './telas/indicatorScreen/IndicatorScreen';
 import { Login } from './telas/login/login';
+import { Cadastro } from './telas/login/cadastro';
+
+//login
+//usuario: User
+//senha: 123
 import { Avaliacao } from './telas/avaliacao/avaliacao';
 
 const Stack = createStackNavigator();
@@ -16,6 +21,10 @@ export default function App() {
     <Stack.Navigator initialRouteName="Avaliacao">
       
       <Stack.Screen name="Login" component={Login}  options={{
+        headerShown: false, // Oculta o cabeçalho na tela "Home"
+      }}/>
+
+      <Stack.Screen name="Cadastro" component={Cadastro}  options={{
         headerShown: false, // Oculta o cabeçalho na tela "Home"
       }}/>
 

@@ -1,10 +1,10 @@
 import { View, Image, TextInput, TouchableOpacity, Text} from "react-native"
 import { LoginStyles } from "./login.style"
 import Icon from 'react-native-vector-icons/FontAwesome';
-import axios from "axios"
 import { useState } from "react";
 import { LoadModal } from "../filter/Modal/loadModal";
 import { configHttp } from "../../config";
+import axios from "axios"
 
 export const Login =({navigation}) =>{
     const [modalload, setmodaload] = useState({ status: false, msg: "" }) //modal para o pop up de loadscreens
@@ -59,7 +59,9 @@ export const Login =({navigation}) =>{
         </View>
             <View style={LoginStyles.same_line}>
                 <TouchableOpacity style={LoginStyles.buttons} onPress={()=>{makeRequest(person.user, person.password, navigation, setmodaload)}}><Text style={LoginStyles.text}>Enviar</Text></TouchableOpacity>
-                <TouchableOpacity style={LoginStyles.buttons}><Text style={LoginStyles.text}>Cadastrar</Text></TouchableOpacity>
+                <TouchableOpacity style={LoginStyles.buttons}><Text style={LoginStyles.text} onPress={()=>{
+                  navigation.navigate('Cadastro')
+                }}>Cadastrar</Text></TouchableOpacity>
             </View>
       </View>
     )
@@ -67,7 +69,7 @@ export const Login =({navigation}) =>{
 const makeRequest = async (user, pass, navigator, setmodal) => {
     try{
         setmodal({status: true, msg:'Processando os dados'})
-        let res = await axios.post("http://"+configHttp.url_base+"/dataverse/login/", {
+        let res = await axios.post(`http://${configHttp.url_base}/dataverse/login`, {
             user: user,
             password: pass
         })
@@ -75,7 +77,8 @@ const makeRequest = async (user, pass, navigator, setmodal) => {
         navigator.navigate('Home')
     }
     catch(err){
-        alert(`Falha ao login: ${err.response.data.message}`)
+      console.log(err)
+        alert(`Falha ao login: Usuario ou senha errados`)
     }
     setmodal({status: false, msg:''})
 }
