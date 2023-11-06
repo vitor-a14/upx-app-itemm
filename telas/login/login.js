@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import axios from "axios"
 import { useState } from "react";
 import { LoadModal } from "../filter/Modal/loadModal";
+import { configHttp } from "../../config";
 
 export const Login =({navigation}) =>{
     const [modalload, setmodaload] = useState({ status: false, msg: "" }) //modal para o pop up de loadscreens
@@ -66,7 +67,7 @@ export const Login =({navigation}) =>{
 const makeRequest = async (user, pass, navigator, setmodal) => {
     try{
         setmodal({status: true, msg:'Processando os dados'})
-        let res = await axios.post("http://192.168.100.10:3000/dataverse/login/", {
+        let res = await axios.post("http://"+configHttp.url_base+"/dataverse/login/", {
             user: user,
             password: pass
         })

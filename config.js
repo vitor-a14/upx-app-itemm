@@ -1,3 +1,3 @@
 export const configHttp = {
-    url_base: '172.17.103.183:3000'
+    url_base: '192.168.100.44:3000'
 }

@@ -6,13 +6,14 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { FilterScreen } from './telas/filter/filter_screen';
 import IndicatorScreen from './telas/indicatorScreen/IndicatorScreen';
 import { Login } from './telas/login/login';
+import { Avaliacao } from './telas/avaliacao/avaliacao';
 
 const Stack = createStackNavigator();
 
 export default function App() {
   return (
     <NavigationContainer>
-    <Stack.Navigator initialRouteName="Login">
+    <Stack.Navigator initialRouteName="Avaliacao">
       
       <Stack.Screen name="Login" component={Login}  options={{
         headerShown: false, // Oculta o cabeçalho na tela "Home"
@@ -29,7 +30,9 @@ export default function App() {
       <Stack.Screen name="FilterScreen" component={FilterScreen}  options={{
         headerShown: false, // Oculta o cabeçalho na tela "Home"
       }}/>
-
+      <Stack.Screen name="Avaliacao" component={Avaliacao}  options={{
+        headerShown: false, // Oculta o cabeçalho na tela "Home"
+      }}/>
       <Stack.Screen name="IndicatorScreen" component={IndicatorScreen}  options={{
         headerShown: false, // Oculta o cabeçalho na tela "Home"
       }}/>

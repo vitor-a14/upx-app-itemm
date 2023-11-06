@@ -8,6 +8,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@miblanchard/react-native-slider": "^2.3.1",
     "@react-native-community/datetimepicker": "^7.5.0",
     "@react-native-picker/picker": "^2.5.0",
     "@react-navigation/native": "^6.1.7",
