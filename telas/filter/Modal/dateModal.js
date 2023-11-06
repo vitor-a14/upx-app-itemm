@@ -13,7 +13,7 @@ export const DateModal = (props) => {
         <View style={styles.modalView}>
           <View style={styles.postion_close_btn}>
             <TouchableOpacity onPress={() => {
-              props.onchange("Data");
+              props.onchange("");
               props.func(false);
             }} style={styles.close_button}>
               <Text style={StyleSheet.create({

@@ -33,19 +33,22 @@ export const FilterScreen = ({ navigation }) => {
   const [rawData, setrawData] = useState([]);//toodos os dados da req
   const [visibleData, setVisibleData] = useState([]);//so os dados que serao mostrado e aki que é aplicado os filtros
   //filters
-  const [selectedDate, setSelectedDate] = useState('Data');
-  const [selectedOption, setSelectedOption] = useState('');
-  const [selectName, setSelectedName] = useState('');
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectName, setSelectedName] = useState(null);
   //escolhas do cliente
   const [student, setStudent] = useState('');
   const [mode, setMode] = useState(undefined)
   //
   //modes
-
-  //Use Effects
   useEffect(() => {
-    console.log(`useeffect studen:> ${student}`);
-  }, [student]);
+    (async () => {
+      console.log('so vendor')
+      await getdata();
+    })();
+  }, []);
+  
+  //Use Effects
 
   const getdata = async () => {
     setmodaload({ status: true, msg: "Carregando dados" })
@@ -67,21 +70,19 @@ export const FilterScreen = ({ navigation }) => {
     //console.log(rawData)
     setVisibleData(value)
     setmodaload({ status: false, msg: "" })
+    //console.log(rawData)
   }
 
-  useEffect(() => {
-    (async () => {
-      await getdata();
-    })();
-    }, []);
+ 
 
   //filtro para aplicar filtros
   const applyfilters = async () => {
+    console.log('filtro?')
     setmodaload({status: true, msg: "filtrando dados"})
-    //await getdata()
-    let filter_itens = [...rawData]
 
-    if (selectedDate !== "Data") {
+    let filter_itens = rawData
+    console.log(rawData)
+    if (selectedDate !== null && selectedDate !== "" ) {
       //fazer a logica de filtro de datas
         let presence_of_day = await checkPresence(selectedDate)
        // console.log('precense' + presence_of_day.length)
@@ -118,20 +119,18 @@ export const FilterScreen = ({ navigation }) => {
         console.log(filter_itens[0])
     }
 
-    if (selectedOption) {
+    if (selectedOption !== null && selectedOption !== "") {
       filter_itens = filter_itens.filter((filt) => { return filt.cr0bb_turma === selectedOption })
     }
 
-    if (selectName !== '' && selectName !== ' ') {
+    if (selectName !== null && selectName !== ' ' && selectName !== '' ) {
       filter_itens = filter_itens.filter((filt) => {
         let fix_name = filt.cr0bb_nome.toLowerCase();
         let fix_name_search = selectName.toLowerCase();
-        return fix_name.indexOf(fix_name_search) !== -1
+        return fix_name.indexOf(fix_name_search) === 0
       })
     }
-    else {
-      console.log()
-    }
+ 
     setmodaload({status: false, msg: ""})
 
     setVisibleData(filter_itens)
@@ -150,7 +149,6 @@ export const FilterScreen = ({ navigation }) => {
     const execute_interface = async (estudante) => {
       try{
         if (!mode) {
-          console.log('é null')
           return
         } else {
           if(mode instanceof ButtonPresenca){
@@ -172,22 +170,28 @@ export const FilterScreen = ({ navigation }) => {
   }, [mode])
 
   useEffect(() => {//temos que usar isso pois o set é assincrono ai usamos o useEffect para ser observador da var selectedOption, quando ela mudar é exec a func abaixo
-   applyfilters().then(()=>console.log('foi'))
+    console.log("--------------> option")
+    if(selectedOption === null) return console.log('primeiro')
+    applyfilters().then(()=>console.log('foi'))
   }, [selectedOption]);
 
   useEffect(() => {//temos que usar isso pois o set é assincrono ai usamos o useEffect para ser observador da var selectedOption, quando ela mudar é exec a func abaixo
-    console.log("-------------->" + selectedDate)
-    getdata().then(applyfilters)
+    console.log("--------------> date")
+    if(selectedDate === null) return console.log('primeiro')
+    getdata().then(()=>{applyfilters()})
     //applyfilters().then(()=>console.log('foi'))
   }, [selectedDate]);
 
   useEffect(() => {//temos que usar isso pois o set é assincrono ai usamos o useEffect para ser observador da var selectedOption, quando ela mudar é exec a func abaixo
+    console.log("--------------> nome")
+    if(selectName === null) return console.log('primeiro')
     applyfilters().then(()=>console.log('foi'))
   }, [selectName]);
 
- const handleNameChange = (itemValue) => {
+  const handleNameChange = (itemValue) => {
     setSelectedName(itemValue);
   };
+
   const modalcall = () => {
     console.log('modal foi chamado')
     setmodaldate(true)
@@ -219,8 +223,7 @@ export const FilterScreen = ({ navigation }) => {
               onValueChange={handleOptionChange}
               style={filterStyle.button_piecker}
             >
-              {/*default option do select enabled={false}*/}
-              <Picker.Item label="Turmas" value="" />
+              <Picker.Item label="Turmas" value={""} />
               {renderPickerItems(rawData)}
             </Picker>
 
@@ -234,7 +237,16 @@ export const FilterScreen = ({ navigation }) => {
             style={filterStyle.button_dividido}
             onPress={modalcall}
           >
-            <Text>{selectedDate}</Text>
+            {
+              selectedDate && selectedDate !== "" ? (
+                <Text>{selectedDate}</Text>
+
+              ):(
+<Text>{"Data"}</Text>
+
+              )
+              
+            }
           </TouchableOpacity>
         </View>
       </View>       
@@ -296,7 +308,7 @@ export const FilterScreen = ({ navigation }) => {
             setMode(new ButtonIndicador())
           }}></ButtonsModes>
           <ButtonsModes src={iconspath.presenca} mode={() => {
-            if(selectedDate === 'Data') return alert('é preciso informar a data para fazer a chamada')
+            if(selectedDate === null) return alert('é preciso informar a data para fazer a chamada')
             setmodalpresenca(true)            
           }}></ButtonsModes>
         </View>

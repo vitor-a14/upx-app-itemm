@@ -1,15 +1,13 @@
 
 import { configHttp } from "../../../config";
 import { IButtonsMode } from "./IButtonsMode";
-
-const axios = require('axios')
+import axios from "axios";
 
 export class ButtonPresenca extends IButtonsMode{
-    presence 
+    presence //boolean true = presente
 
     constructor(presence){
         super()
-        console.log('instancia nova', presence)
         this.presence = presence
     }
 
