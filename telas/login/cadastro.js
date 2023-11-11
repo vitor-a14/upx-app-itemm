@@ -76,10 +76,7 @@ const makereq = async(data, nav) =>{
         cr0bb_senha : data.password
     }).then(()=>{
         console.log('foi')
-        alert("cadastrado com sucesso!!!
-    ]
-    
-    ")
+        alert("cadastrado com sucesso!!!")
         nav.navigate('Login')
     })
     .catch((err)=>{

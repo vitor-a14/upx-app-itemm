@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useDebugValue, useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, ImageBackground } from 'react-native';
 import { filterStyle } from './style_filter';
 import { Picker } from '@react-native-picker/picker';
@@ -12,6 +12,7 @@ import { ButtonPresenca } from './modesAction/button.presenca';
 import { configHttp } from '../../config';
 import { PresencaModal } from './Modal/presencaModal';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
@@ -23,7 +24,19 @@ const iconspath = {
   presenca: require('../../assets/presenca.png')
 }
 
-export const FilterScreen = ({ navigation }) => {
+export const FilterScreen = ({route,navigation}) => {
+  useEffect(() => {
+    (async () => {
+      const user = await AsyncStorage.getItem("user")
+      if(user){
+        setuser(user)
+      }
+      else{
+        return alert('sem usuario')
+      }
+      await getdata();
+    })();  }, [route.params?.key]);
+  const [user, setuser] = useState("")
   //modals
   const [modaldate, setmodaldate] = useState(false) //modal para o pop up de datas
   const [modalload, setmodaload] = useState({ status: false, msg: "" }) //modal para o pop up de loadscreens
@@ -41,11 +54,20 @@ export const FilterScreen = ({ navigation }) => {
   const [mode, setMode] = useState(undefined)
   //
   //modes
+
   useEffect(() => {
+
     (async () => {
-      console.log('so vendor')
+      const user = await AsyncStorage.getItem("user")
+      if(user){
+        setuser(user)
+      }
+      else{
+        return alert('sem usuario')
+      }
       await getdata();
     })();
+
   }, []);
   
   //Use Effects
@@ -70,6 +92,9 @@ export const FilterScreen = ({ navigation }) => {
     //console.log(rawData)
     setVisibleData(value)
     setmodaload({ status: false, msg: "" })
+    if(selectedDate){
+      await applyfilters()
+    }
     //console.log(rawData)
   }
 
@@ -298,7 +323,10 @@ export const FilterScreen = ({ navigation }) => {
         &&
         <View style={filterStyle.canva_botton_buttons} >
           <ButtonsModes src={iconspath.avaliacao} mode={() => {
-            setMode(new ButtonAval())
+            
+          if(!student) return alert('Aluno nao pode ser avaliado!!->'+ student)  
+          if(!student.status?.presenca) return alert('aluno nao pode ser avaliado!!!')
+          setMode(new ButtonAval(selectedDate))
           }}></ButtonsModes>
           {/*func={()=>dowload(setmodaload)}*/}
           <ButtonsModes src={iconspath.certificado} mode={() => {

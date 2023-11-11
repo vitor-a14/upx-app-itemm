@@ -241,7 +241,7 @@ const IndicatorScreen = ({ route, navigation }) => {
                 <StudentPieChart indicators={notas} />
                 <StudentProgressChart indicators={notas}/>
                 <LegendCard indicators={notas}/>
-                <ButtonsProps title={'Voltar'} onPress={() => navigation.navigate('Home')}></ButtonsProps>
+                <ButtonsProps title={'Voltar'} onPress={() => navigation.navigate('FilterScreen')}></ButtonsProps>
             </View>
         </View>
     )

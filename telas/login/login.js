@@ -74,7 +74,7 @@ const makeRequest = async (user, pass, navigator, setmodal) => {
             password: pass
         })
         console.log('achou o user' + res.data)
-        navigator.navigate('Home')
+        navigator.navigate('Home',{name: user})
     }
     catch(err){
       console.log(err)

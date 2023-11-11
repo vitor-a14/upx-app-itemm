@@ -23,6 +23,7 @@ export class ButtonPresenca extends IButtonsMode{
             cr0bb_cumprimentodemetas:undefined,
             cr0bb_habilidadestecnicas:undefined,
             cr0bb_idaluno: student.cr0bb_autonumber,
+            cr0bb_avaliador : undefined
         }).then((res)=>console.log('req mandada', res.status))
  }
 }

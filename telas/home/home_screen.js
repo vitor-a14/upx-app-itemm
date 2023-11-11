@@ -1,9 +1,10 @@
 import { View, Image, TouchableOpacity, Text  } from "react-native"
 import { homeStyle } from "./style_home"
 import { useNavigation } from "@react-navigation/native";
+import { useEffect } from "react";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
-export const HomeScreen = ({navigation}) =>{
+export const HomeScreen = ({route,navigation}) =>{
 
     const handleDepartamentoPessoalPress = () => {
     // Lógica para a tela "Departamento Pessoal"
@@ -13,10 +14,10 @@ export const HomeScreen = ({navigation}) =>{
     // Lógica para a tela "Setor Pedagógico"
     };
 
-    const handleSetorSocialPress = () => {
+    const handleSetorSocialPress = async () => {
+        await AsyncStorage.setItem('user', route.params.name);
         navigation.navigate('FilterScreen'); // Navegue para a tela "SetorSocial"
     };
-
 
     return (
         <View style={homeStyle.canva}>  

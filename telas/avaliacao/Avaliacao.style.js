@@ -2,23 +2,21 @@ import { StyleSheet } from "react-native";
 
  export const AvaliacaoStyle = StyleSheet.create({
     main_canva:{
-        flex:1,
         display: "flex",
         justifyContent: "flex-start",
         alignItems:"center",
         width: "100%",
-        height: "100%",
+        height: "35%",
         borderRadius: 3,
-        
     },
     canvaDisplay:{
-        marginTop:"3%",
         width:"80%",
         display:"flex",
         flexDirection:"column",
         justifyContent: 'space-between'
     },
     textDisplay:{
+        textAlign: "center",
         backgroundColor:"white",
         borderRadius:20,
         width:"100%",
@@ -30,8 +28,6 @@ import { StyleSheet } from "react-native";
         flexDirection: "row",
         alignItems: 'flex-end',
         width: 150,
-        marginBottom: 20,
-        padding: "1%",
         margin: "3%",
     },
     elemento1: {
@@ -43,7 +39,8 @@ import { StyleSheet } from "react-native";
     
     canvaDisplaySmall:{
         marginTop:"3%",
-        width:"80%",
+        marginRight:"5%",
+        width:"65%",
         display:"flex",
         flexDirection:"column",
         justifyContent: 'space-between'
@@ -56,10 +53,8 @@ import { StyleSheet } from "react-native";
     },
     Ponto:{
 
-        flex: 1,
-        marginHorizontal:40,
-        marginVertical:70,
-        justifyContent: 'center',
+        justifyContent: "center",
+        width:"80%",
         backgroundColor: 'rgba(226,238,252, 225)',
         borderRadius:20,
         padding: "3%"
