@@ -13,16 +13,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(226,238,252, 225)',
-        borderRadius: '25%',
         padding: '5%',
         marginVertical: '3%',
         padding: '5%',
-        margin: '3%'
+        margin: 0
     },
     titleContainer: {
         justifyContent: 'center',
         backgroundColor: 'rgba(226,238,252, 225)',
-        borderRadius: '25%',
+        borderRadius: 25,
         margin: 'auto',
         height: '10%',
         margin: '3%'
@@ -37,7 +36,7 @@ const styles = StyleSheet.create({
     button: {
         justifyContent: 'center',
         backgroundColor: 'rgba(226,238,252, 225)',
-        borderRadius: '25%',
+        borderRadius: 25,
         margin: 'auto',
         height: '8%',
         margin: '3%',
@@ -46,8 +45,7 @@ const styles = StyleSheet.create({
     chartContainer: {
         alignItems: 'center',
         display: 'flex',
-        padding: '5%',
-        margin: '-10.5%'
+        margin: '-2.5%'
     },
     progressChartLegend: {
         fontWeight: 'bold',
@@ -59,9 +57,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'rgba(226,238,252, 225)',
-        borderRadius: '25%',
-        padding: '3%',
-        margin: '3%',
+        paddingVertical: '3%',
+        marginVertical: '3%',
     },
     legendContainer: {
         flex: 1,
@@ -95,33 +92,47 @@ const indicators = [
 ];
 
 const StudentPresence = (props) => {
-    const data = [
-        {
-            key: props.indicators[0].label,
-            value: props.indicators[0].value * 100,
-            fill: props.indicators[0].color
-        },
-        {
-            key: props.indicators[1].label,
-            value: props.indicators[1].value * 100,
-            fill: props.indicators[1].color
-        },
-        {
-            key: props.indicators[2].label,
-            value: props.indicators[2].value * 100,
-            fill: props.indicators[2].color
-        },
-        {
-            key: props.indicators[3].label,
-            value: props.indicators[3].value * 100,
-            fill: props.indicators[3].color
-        }
-    ];
+    //substituir estes valores mockados <----------------------------------------------------
+    const diasPresentes = 3
+    const diasPresentesSemAvaliacao = 1
+    const faltas = 2
 
     return (
-    <View style={styles.container}>
-
-    </View>
+        <View style={styles.legendCard}>
+            <View style={styles.legendContainer}>
+                <View
+                style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: 8 / 2,
+                    backgroundColor: "#3d5875",
+                }}
+                />
+                <Text style={styles.legendText}> Dias presentes:  {diasPresentes} </Text>
+            </View>
+            <View style={styles.legendContainer}>
+                <View
+                style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: 8 / 2,
+                    backgroundColor: "#3d5875",
+                }}
+                />
+                <Text style={styles.legendText}> Dias presentes sem avaliação:  {diasPresentesSemAvaliacao} </Text>
+            </View>
+            <View style={styles.legendContainer}>
+                <View
+                style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: 8 / 2,
+                    backgroundColor: "#3d5875",
+                }}
+                />
+                <Text style={styles.legendText}> Faltas:  {faltas} </Text>
+            </View>
+        </View>
     );
 }
 
@@ -199,6 +210,8 @@ const IndicatorScreen = ({ route, navigation }) => {
         {value: 0, color: '#F96900', label: 'Habilidade Técnica' },  
     ])
 
+    const presenca = 0
+
     useEffect(()=>{
         setmodaload({status:true, msg:'carregando dados'})
         getAval(student.cr0bb_autonumber).
@@ -229,11 +242,7 @@ const IndicatorScreen = ({ route, navigation }) => {
                 {value:  parseFloat(habilidades/max_nota).toFixed(4), color: '#F96900', label: 'Habilidade Técnica' }, 
             ])
         })
-
-        getAval(student.cr0bb_presenca).
-        then((res)=>{
-            console.log(res);
-        })
+        
         setmodaload({status:false, msg:''})
     }, [])
 
@@ -243,9 +252,9 @@ const IndicatorScreen = ({ route, navigation }) => {
             <View style={styles.viewStyle}>
                 <LoadModal status={modalload.status} msg={modalload.msg}></LoadModal>
                 <StudentTitle nome={student.cr0bb_nome}/>
-                <StudentPresence indicators={notas} />
                 <StudentProgressChart indicators={notas}/>
                 <LegendCard indicators={notas}/>
+                <StudentPresence indicators={notas} /> 
                 <ButtonsProps title={'Voltar'} onPress={() => navigation.navigate('FilterScreen')}></ButtonsProps>
             </View>
         </View>
