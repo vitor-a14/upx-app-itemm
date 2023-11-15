@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { PieChart } from 'react-native-svg-charts';
-import { ProgressCircle } from 'react-native-svg-charts';
 import { ImageBackground, Text, TouchableOpacity } from 'react-native';
 import axios from 'axios'
 import { configHttp } from '../../config';
 import { LoadModal } from '../filter/Modal/loadModal';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 
 const styles = StyleSheet.create({
     container: {
@@ -16,7 +15,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(226,238,252, 225)',
         borderRadius: 26,
         padding: 15,
-        margin: 15,
+        marginVertical: 15,
+        marginHorizontal: -8,
     },
     titleContainer: {
         justifyContent: 'center',
@@ -44,7 +44,8 @@ const styles = StyleSheet.create({
     },
     chartContainer: {
         alignItems: 'center',
-        padding: 5,
+        display: 'flex',
+        margin: 0,
     },
     chart: {
         height: 80,
@@ -95,41 +96,35 @@ const indicators = [
    
 ];
 
-const StudentPieChart = (props) => {
+const StudentPresence = (props) => {
     const data = [
         {
-          key: props.indicators[0].label,
-          value: props.indicators[0].value * 100,
-          svg: { fill: props.indicators[0].color },
+            key: props.indicators[0].label,
+            value: props.indicators[0].value * 100,
+            fill: props.indicators[0].color
         },
         {
-          key: props.indicators[1].label,
-          value: props.indicators[1].value * 100,
-          svg: { fill: props.indicators[1].color },
+            key: props.indicators[1].label,
+            value: props.indicators[1].value * 100,
+            fill: props.indicators[1].color
         },
         {
-          key: props.indicators[2].label,
-          value: props.indicators[2].value * 100,
-          svg: { fill: props.indicators[2].color },
+            key: props.indicators[2].label,
+            value: props.indicators[2].value * 100,
+            fill: props.indicators[2].color
         },
         {
             key: props.indicators[3].label,
             value: props.indicators[3].value * 100,
-            svg: { fill: props.indicators[3].color },
+            fill: props.indicators[3].color
         }
-      ];
-      console.log(data)
-      return (
-        <View style={styles.container}>
-          <PieChart
-            style={{ height: "150%", width: "150%" }}
-            data={data}
-            innerRadius={'30%'}
-            outerRadius={'70%'}
-          >
-          </PieChart>
-        </View>
-      );
+    ];
+
+    return (
+    <View style={styles.container}>
+
+    </View>
+    );
 }
 
 const StudentProgressChart = (props) => {
@@ -137,18 +132,22 @@ const StudentProgressChart = (props) => {
         <View style={styles.container}>
             {props.indicators.map((item, index) => (
             <View  key={`legend-item-${index}`} style={styles.chartContainer}>
-                <ProgressCircle
-                    style={styles.chart}
-                    progress={parseFloat(item.value)}
-                    progressColor={item.color}
-                    backgroundColor={'rgba(185, 202, 198, 1)'}
-                    strokeWidth={12}
-                    cornerRadius={6}
-                >
-                </ProgressCircle>
-                <Text style={styles.progressChartLegend}>
-                    {(item.value * 100).toFixed(2) + '%'}
-                </Text>
+                <View style={styles.container}>
+                    <AnimatedCircularProgress
+                    size={80}
+                    width={5}
+                    fill={(item.value * 100).toFixed(2)}
+                    tintColor="#00e0ff"
+                    backgroundColor="#3d5875">
+                    {(fill) => (
+                    <View>
+                        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#00e0ff' }}>
+                        {`${Math.round(fill)}%`}
+                        </Text>
+                    </View>
+                    )}
+                    </AnimatedCircularProgress>
+                </View>
             </View>
             ))}
         </View>
@@ -160,7 +159,14 @@ const LegendCard = (props) => {
         <View style={styles.legendCard}>
             {props.indicators.map((item) => (
                 <View style={styles.legendContainer}>
-                    <ProgressCircle style={styles.legendItem} progress={1} progressColor={item.color} strokeWidth={40}/>
+                    <View
+                    style={{
+                        width: 15,
+                        height: 15,
+                        borderRadius: 15 / 2,
+                        backgroundColor: "#00e0ff",
+                    }}
+                    />
                     <Text style={styles.legendText}> {item.label} </Text>
                 </View>
             ))}
@@ -229,8 +235,7 @@ const IndicatorScreen = ({ route, navigation }) => {
             console.log(notas)
         })
         setmodaload({status:false, msg:''})
-        }, [])
-
+    }, [])
 
     return (
         <View>
@@ -238,7 +243,7 @@ const IndicatorScreen = ({ route, navigation }) => {
             <View style={styles.viewStyle}>
                 <LoadModal status={modalload.status} msg={modalload.msg}></LoadModal>
                 <StudentTitle nome={student.cr0bb_nome}/>
-                <StudentPieChart indicators={notas} />
+                <StudentPresence indicators={notas} />
                 <StudentProgressChart indicators={notas}/>
                 <LegendCard indicators={notas}/>
                 <ButtonsProps title={'Voltar'} onPress={() => navigation.navigate('FilterScreen')}></ButtonsProps>
@@ -254,7 +259,6 @@ const IndicatorScreen = ({ route, navigation }) => {
  */
 
 const getAval = async (student_id)=>{
-    console.log('pegando valores', student_id)
     let url = `http://${configHttp.url_base}/dataverse/avaliacao/${student_id}`
     let res = axios.get(url).
     then((res)=>{
