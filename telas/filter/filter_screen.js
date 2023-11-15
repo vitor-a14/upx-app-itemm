@@ -155,11 +155,8 @@ export const FilterScreen = ({ route, navigation }) => {
     setVisibleData(filter_itens)
   }
 
-  // Função para lidar com a seleção de uma data
-
-
   // Função para lidar com a seleção de uma opção no dropdown
-  const handleOptionChange = (itemValue) => {//isso aki é o drop down da turma
+  const handleOptionChange = (itemValue) => {
     setSelectedOption(itemValue);
   };
 
@@ -180,7 +177,7 @@ export const FilterScreen = ({ route, navigation }) => {
         }
       }
       catch (err) {
-        console.log(err)
+        console.error(err)
       }
 
     }

@@ -3,7 +3,6 @@ import { ButtonPresenca } from "../modesAction/button.presenca"
 import { styleLoadScreen } from "../../load/style_load"
 
 export const PresencaModal = (props) => {
-  console.log(typeof props.student)
   return (
     <Modal
       animationType="slide"
@@ -20,7 +19,6 @@ export const PresencaModal = (props) => {
             <View style={styles.sameline}>
               
               <TouchableOpacity onPress={() => {
-                console.log('prensença')
                 props.ok(new ButtonPresenca(true))
                 props.reject(false)
               }}>
@@ -28,7 +26,6 @@ export const PresencaModal = (props) => {
               </TouchableOpacity>
 
               <TouchableOpacity onPress={() => {
-                console.log('falta')
                 props.ok(new ButtonPresenca(false))
                 props.reject(false)
               }}>

@@ -10,11 +10,8 @@ import { validCertificado } from "./CertificadoObjs/ValidCertificado";
 export class ButtonCertificado extends IButtonsMode{
     validCertificado = new validCertificado()
     async execute_mode_funtion(student){
-        console.log('====================================>', student['cr0bb_rg'], student['cr0bb_periodocontrato'], student['cr0bb_empresa']);
-        console.log(student['cr0bb_autonumber'], student['cr0bb_periodocontrato'])
         let valid = await this.validCertificado.valid(student['cr0bb_autonumber'], student['cr0bb_periodocontrato'])
         if(!valid) return alert('não é possivel ainda gerar certificado para o aluno ' + student['cr0bb_nome']);
-        console.log('pode gerar o certificado')
         await this.dowload(new CertificadoFileds(student['cr0bb_rg'], student['cr0bb_periodocontrato'], student['cr0bb_empresa']));
     }
 
@@ -39,13 +36,10 @@ export class ButtonCertificado extends IButtonsMode{
         let filename = `${rg}.pdf`;
         //filename = filename.replace('.', '-')
         const url = `http://${configHttp.url_base}/certificados/generate/${encodeURIComponent(certificado_fields.RG)}/${encodeURIComponent(certificado_fields.empresa)}/${encodeURIComponent(certificado_fields.dataInicio)}/${encodeURIComponent(certificado_fields.dataFinal)}`
-        console.log(url)
         const result =await FileSystem.downloadAsync(
           url,
           FileSystem.documentDirectory + filename
         );
-        console.log(certificado_fields);
-        console.log(filename)
         await this.save(result.uri, filename, result.headers["Content-Type"]);
     }
 }

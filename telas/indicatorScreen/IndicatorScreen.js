@@ -93,13 +93,13 @@ const styles = StyleSheet.create({
 const StudentProgressChart = (props) => {
     return (
         <View style={styles.container}>
-            {props.indicators.map((item, index) => (
-                <View key={`legend-item-${index}`} style={styles.chartContainer}>
+        {props.indicators.map((item, index) => (
+    <View key={`chart-item-${index}`} style={styles.chartContainer}>
                     <View style={styles.container}>
                         <AnimatedCircularProgress
                             size={70}
                             width={5}
-                            fill={(item.value * 100).toFixed(2)}
+                            fill={Number((item.value * 100).toFixed(2))}
                             tintColor={item.color}
                             backgroundColor="#3d5875">
                             {(fill) => (
@@ -122,7 +122,7 @@ const LegendCard = (props) => {
     return (
         <View style={styles.legendCard}>
             {props.indicators.map((item) => (
-                <View style={styles.legendContainer}>
+                <View key={item.color} style={styles.legendContainer}>
                     <View
                         style={{
                             width: 15,
@@ -157,7 +157,7 @@ const ButtonsProps = (props) => {
 const IndicatorScreen = ({ route, navigation }) => {
     const student = route.params.student;
     const [conjunto_notas, set_conjunto] = useState([])
-    const [modalload, setmodaload] = useState({ status: false, msg: "" }) //modal para o pop up de loadscreens
+    const [modalload, setmodaload] = useState({ status: true, msg: "" }) //modal para o pop up de loadscreens
     const [notas, set_notas] = useState([
         { value: 0, color: '#F0C808', label: 'Relacionamento Interpessoal' },
         { value: 0, color: '#DD1C1A', label: 'Participação' },
@@ -171,7 +171,6 @@ const IndicatorScreen = ({ route, navigation }) => {
     })
 
     useEffect(() => {
-        setmodaload({ status: true, msg: 'carregando dados' })
         getAval(student.cr0bb_autonumber).
             then((res) => {
                 if (res.length === 0) {
@@ -221,7 +220,6 @@ const IndicatorScreen = ({ route, navigation }) => {
                     s_aval: dais_s_aval
                 })
                 const max_nota = res.length * 2
-                console.log(max_nota)
                 set_notas([
                     { value: parseFloat(relacionamento / max_nota).toFixed(4), color: '#F0C808', label: 'Relacionamento Interpessoal' },
                     { value: parseFloat(participacao / max_nota).toFixed(4), color: '#DD1C1A', label: 'Participação' },

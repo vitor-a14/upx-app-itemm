@@ -23,7 +23,6 @@ export const Avaliacao = ({navigation, route}) => {
     let date_of_aval = undefined
     
     useEffect(() => {
-        console.log(route.params);
         const { student, date } = route.params;
     
         const fetcDhata = async () => {
@@ -31,8 +30,6 @@ export const Avaliacao = ({navigation, route}) => {
                 const res = await getAval(student, date); // Passe student e date como parâmetros para getAval
                 const { cr0bb_participacao, cr0bb_cumprimentodemetas, cr0bb_relacionamentointerpessoal, cr0bb_habilidadestecnicas } = res;
     
-                console.log('o de baixo que precios');
-                console.log(cr0bb_cumprimentodemetas, cr0bb_participacao, cr0bb_relacionamentointerpessoal, cr0bb_habilidadestecnicas);
                 
                 setStudent({ student: student, date: date });
                 setslide({slider1: cr0bb_habilidadestecnicas??0, slider2: cr0bb_participacao??0, slider3: cr0bb_relacionamentointerpessoal??0, slider4: cr0bb_cumprimentodemetas??0})
@@ -49,8 +46,6 @@ export const Avaliacao = ({navigation, route}) => {
     }, [route.params]);
     
     const getAval = async (student, date) => { // Aceita student e date como parâmetros
-        console.log('o aluno abaixo');
-        console.log(student);
         const { data: { value } } = await axios.get(`http://${configHttp.url_base}/dataverse/avaliacao`);
         const myaval = value.find((filt) => {
             if (filt.cr0bb_idaluno === student.cr0bb_autonumber && filt.cr0bb_datapresenca === date) {
@@ -63,7 +58,6 @@ export const Avaliacao = ({navigation, route}) => {
     const handlePress = () => {
         // Logica a ser executada quando o botao for pressionado
         navigation.navigate("FilterScreen")
-        console.log('Botao pressionado!');
     };
     const BotaoComImagem = () => {
         return (
@@ -78,11 +72,9 @@ export const Avaliacao = ({navigation, route}) => {
 
     const registerRequest = async() =>{
         set_modal(true)
-        console.log('registe')
         
         const myaval = await getAval(student.student, student.date)
      
-        console.log(myaval.cr0bb_avaliacaoid)
 
         await axios.put(`http://${configHttp.url_base}/dataverse/avaliacao`,{
             "id": myaval.cr0bb_avaliacaoid,

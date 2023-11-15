@@ -10,7 +10,6 @@ export class CertificadoFileds{
         this.dataInicio = date_array[0]
         this.dataFinal = date_array[1]
         this.empresa = empresa
-        console.log(this.dataFinal, this.dataInicio, this.RG)
     }
 
     canbeGenerate(){

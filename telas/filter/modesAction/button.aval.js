@@ -12,6 +12,5 @@ export class ButtonAval extends IButtonsMode{
         //so vai chamar outra tela e passar o student como parametro
         //alert('avaliação ainda nao foi desenvolvida')
         navigation.navigate("Avaliacao", {student: student, date: this.data})
-        //console.log(student)
     }
 }

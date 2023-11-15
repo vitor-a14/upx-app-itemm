@@ -38,7 +38,6 @@ export const DateModal = (props) => {
             onSelectedChange={(value) => {
               let [year, month, day_hour] = value.split('/')
               let [day, hour] = day_hour.split(' ')
-              console.log(`${day}/${month}/${year}`)
               props.onchange(`${day}/${month}/${year}`)
               props.func(false)
             }

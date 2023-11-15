@@ -70,20 +70,16 @@ export const Cadastro = ({navigation})=>{
 }
 
 const makereq = async(data, nav) =>{
-    console.log('manou')
     const req = await axios.post(`http://${configHttp.url_base}/dataverse/login/cadastro`,{
         cr0bb_usuario : data.user,
         cr0bb_senha : data.password
     }).then(()=>{
-        console.log('foi')
         alert("cadastrado com sucesso!!!")
         nav.navigate('Login')
     })
     .catch((err)=>{
-        console.log(err.response.data.message)
         alert(err.response.data.message + "\nuse outro usuario ou outra senha")
         
     })
-    console.log(req)
 
 }
