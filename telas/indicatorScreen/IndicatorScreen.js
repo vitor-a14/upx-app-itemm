@@ -13,18 +13,19 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(226,238,252, 225)',
-        borderRadius: 26,
-        padding: 15,
-        marginVertical: 15,
-        marginHorizontal: -8,
+        borderRadius: '25%',
+        padding: '5%',
+        marginVertical: '3%',
+        padding: '5%',
+        margin: '3%'
     },
     titleContainer: {
         justifyContent: 'center',
         backgroundColor: 'rgba(226,238,252, 225)',
-        borderRadius: 26,
+        borderRadius: '25%',
         margin: 'auto',
         height: '10%',
-        margin: 15
+        margin: '3%'
     },
     title: {
         fontSize: 20,
@@ -36,20 +37,17 @@ const styles = StyleSheet.create({
     button: {
         justifyContent: 'center',
         backgroundColor: 'rgba(226,238,252, 225)',
-        borderRadius: 26,
+        borderRadius: '25%',
         margin: 'auto',
         height: '8%',
-        margin: 15,
-        marginTop: 82
+        margin: '3%',
+        marginTop: '15%'
     },
     chartContainer: {
         alignItems: 'center',
         display: 'flex',
-        margin: 0,
-    },
-    chart: {
-        height: 80,
-        width: 80,
+        padding: '5%',
+        margin: '-10.5%'
     },
     progressChartLegend: {
         fontWeight: 'bold',
@@ -61,9 +59,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'rgba(226,238,252, 225)',
-        borderRadius: 26,
-        padding: 16,
-        margin: 15,
+        borderRadius: '25%',
+        padding: '3%',
+        margin: '3%',
     },
     legendContainer: {
         flex: 1,
@@ -73,9 +71,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     legendItem: {
-        height: 20,
-        width: 20,
-        margin: 10,
+        height: '5%',
+        width: '5%',
+        margin: '3%',
     },
     legendText: {
         width: '60%',
@@ -134,14 +132,14 @@ const StudentProgressChart = (props) => {
             <View  key={`legend-item-${index}`} style={styles.chartContainer}>
                 <View style={styles.container}>
                     <AnimatedCircularProgress
-                    size={80}
+                    size={70}
                     width={5}
                     fill={(item.value * 100).toFixed(2)}
-                    tintColor="#00e0ff"
+                    tintColor={item.color}
                     backgroundColor="#3d5875">
                     {(fill) => (
                     <View>
-                        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#00e0ff' }}>
+                        <Text style={{ fontSize: 20, fontWeight: 'bold', color: item.color }}>
                         {`${Math.round(fill)}%`}
                         </Text>
                     </View>
@@ -164,7 +162,7 @@ const LegendCard = (props) => {
                         width: 15,
                         height: 15,
                         borderRadius: 15 / 2,
-                        backgroundColor: "#00e0ff",
+                        backgroundColor: item.color,
                     }}
                     />
                     <Text style={styles.legendText}> {item.label} </Text>
@@ -211,7 +209,6 @@ const IndicatorScreen = ({ route, navigation }) => {
             }
             set_conjunto(res)
             const max_nota = res.length * 2 // o maximo de nota é 2, entao se eu multiplicar por 2 os registros e o maxio que ele pode ter de nota
-            console.log(max_nota)
             const metas = res.reduce((acumulador, currentItem) => {
                 return acumulador + Number(currentItem.cr0bb_cumprimentodemetas);
               }, 0);
@@ -225,14 +222,17 @@ const IndicatorScreen = ({ route, navigation }) => {
                 return acumulador + Number(currentItem.cr0bb_participacao);
             }, 0);
 
-            console.log( metas, relacionamento, habilidades, participacao)
             set_notas([
                 {value: parseFloat(relacionamento/max_nota).toFixed(4), color: '#F0C808', label: 'Relacionamento Interpessoal' },  
                 {value:  parseFloat(participacao/max_nota).toFixed(4), color: '#DD1C1A', label: 'Participação' },  
                 {value:  parseFloat(metas/max_nota).toFixed(4), color: '#0AD3FF', label: 'Cumprimento de Metas' }, 
                 {value:  parseFloat(habilidades/max_nota).toFixed(4), color: '#F96900', label: 'Habilidade Técnica' }, 
             ])
-            console.log(notas)
+        })
+
+        getAval(student.cr0bb_presenca).
+        then((res)=>{
+            console.log(res);
         })
         setmodaload({status:false, msg:''})
     }, [])
