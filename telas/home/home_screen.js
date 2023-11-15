@@ -15,7 +15,7 @@ export const HomeScreen = ({route,navigation}) =>{
     };
 
     const handleSetorSocialPress = async () => {
-        await AsyncStorage.setItem('user', route.params.name);
+        
         navigation.navigate('FilterScreen'); // Navegue para a tela "SetorSocial"
     };
 

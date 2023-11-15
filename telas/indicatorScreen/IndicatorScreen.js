@@ -89,54 +89,6 @@ const styles = StyleSheet.create({
     },
 });
 
-const indicators = [
-
-];
-
-const StudentPresence = (props) => {
-    //substituir estes valores mockados <----------------------------------------------------
-    const diasPresentes = 3
-    const diasPresentesSemAvaliacao = 1
-    const faltas = 2
-
-    return (
-        <View style={styles.legendCard}>
-            <View style={styles.legendContainer}>
-                <View
-                style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: 8 / 2,
-                    backgroundColor: "#3d5875",
-                }}
-                />
-                <Text style={styles.legendText}> Dias presentes:  {diasPresentes} </Text>
-            </View>
-            <View style={styles.legendContainer}>
-                <View
-                style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: 8 / 2,
-                    backgroundColor: "#3d5875",
-                }}
-                />
-                <Text style={styles.legendText}> Dias presentes sem avaliação:  {diasPresentesSemAvaliacao} </Text>
-            </View>
-            <View style={styles.legendContainer}>
-                <View
-                style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: 8 / 2,
-                    backgroundColor: "#3d5875",
-                }}
-                />
-                <Text style={styles.legendText}> Faltas:  {faltas} </Text>
-            </View>
-        </View>
-    );
-}
 
 const StudentProgressChart = (props) => {
     return (
@@ -159,6 +111,7 @@ const StudentProgressChart = (props) => {
                             )}
                         </AnimatedCircularProgress>
                     </View>
+                    <Text>{Number(item.value * props.max_nota).toFixed(2)}/{props.max_nota}</Text>
                 </View>
             ))}
         </View>
@@ -206,13 +159,16 @@ const IndicatorScreen = ({ route, navigation }) => {
     const [conjunto_notas, set_conjunto] = useState([])
     const [modalload, setmodaload] = useState({ status: false, msg: "" }) //modal para o pop up de loadscreens
     const [notas, set_notas] = useState([
-        {value: 0, color: '#F0C808', label: 'Relacionamento Interpessoal' },  
-        {value: 0, color: '#DD1C1A', label: 'Participação' },  
-        {value: 0, color: '#0AD3FF', label: 'Cumprimento de Metas' }, 
-        {value: 0, color: '#F96900', label: 'Habilidade Técnica' },  
+        { value: 0, color: '#F0C808', label: 'Relacionamento Interpessoal' },
+        { value: 0, color: '#DD1C1A', label: 'Participação' },
+        { value: 0, color: '#0AD3FF', label: 'Cumprimento de Metas' },
+        { value: 0, color: '#F96900', label: 'Habilidade Técnica' },
     ])
-
-    const presenca = 0
+    const [presença, set_presença] = useState({
+        faltas: undefined,
+        presente: undefined,
+        s_aval: undefined
+    })
 
     useEffect(() => {
         setmodaload({ status: true, msg: 'carregando dados' })
@@ -223,28 +179,30 @@ const IndicatorScreen = ({ route, navigation }) => {
                     navigation.navigate('FilterScreen')
                 }
                 set_conjunto(res)
-                
-                const max_nota = res.length * 2 // o maximo de nota é 2, entao se eu multiplicar por 2 os registros e o maxio que ele pode ter de nota
-
                 const dias_presentes = res.reduce((acumulador, currentItem) => {
-                    if (currentItem.cr0bb_presenca === "true") return acumulador++
-                })
+                    if (currentItem.cr0bb_presenca.trim() === "true") {
+                        return acumulador + 1;
+                    }
+                    return acumulador;
+                }, 0);
+
 
                 const dais_s_aval = res.reduce((acumulador, currentItem) => {
                     if (currentItem.cr0bb_presenca === "true" &&
                         (
-                            currentItem.cr0bb_relacionamentointerpessoal ||
-                            currentItem.cr0bb_cumprimentodemetas ||
-                            currentItem.cr0bb_participacao ||
-                            currentItem.cr0bb_habilidadestecnicas
+                            !currentItem.cr0bb_relacionamentointerpessoal ||
+                            !currentItem.cr0bb_cumprimentodemetas ||
+                            !currentItem.cr0bb_participacao ||
+                            !currentItem.cr0bb_habilidadestecnicas
                         )
-                    ) return acumulador++
-                })
+                    ) return Number(acumulador) + 1
+                    return acumulador
+                }, 0)
 
                 const dias_falta = res.reduce((acumulador, currentItem) => {
-                    if (currentItem.cr0bb_presenca === "false") return acumulador++
-                })
-
+                    if (currentItem.cr0bb_presenca === "false") return Number(acumulador) + 1
+                    return acumulador
+                }, 0)
                 const metas = res.reduce((acumulador, currentItem) => {
                     return acumulador + Number(currentItem.cr0bb_cumprimentodemetas);
                 }, 0);
@@ -262,6 +220,8 @@ const IndicatorScreen = ({ route, navigation }) => {
                     presente: dias_presentes,
                     s_aval: dais_s_aval
                 })
+                const max_nota = res.length * 2
+                console.log(max_nota)
                 set_notas([
                     { value: parseFloat(relacionamento / max_nota).toFixed(4), color: '#F0C808', label: 'Relacionamento Interpessoal' },
                     { value: parseFloat(participacao / max_nota).toFixed(4), color: '#DD1C1A', label: 'Participação' },
@@ -274,20 +234,61 @@ const IndicatorScreen = ({ route, navigation }) => {
         setmodaload({ status: false, msg: '' })
     }, [])
 
+    const StudentPresence = () => {
+
+        return (
+            <View style={styles.legendCard}>
+                <View style={styles.legendContainer}>
+                    <View
+                        style={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: 8 / 2,
+                            backgroundColor: "#3d5875",
+                        }}
+                    />
+                    <Text style={styles.legendText}> Dias presentes:  {presença.presente} </Text>
+                </View>
+                <View style={styles.legendContainer}>
+                    <View
+                        style={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: 8 / 2,
+                            backgroundColor: "#3d5875",
+                        }}
+                    />
+                    <Text style={styles.legendText}>Avaliações Pendentes:  {presença.s_aval} </Text>
+                </View>
+                <View style={styles.legendContainer}>
+                    <View
+                        style={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: 8 / 2,
+                            backgroundColor: "#3d5875",
+                        }}
+                    />
+                    <Text style={styles.legendText}> Faltas:  {presença.faltas} </Text>
+                </View>
+            </View>
+        );
+    }
+
     return (
         <View>
             <ImageBackground source={require('../../assets/back-ground.png')} resizeMode="cover" style={styles.image}></ImageBackground>
             <View style={styles.viewStyle}>
                 <LoadModal status={modalload.status} msg={modalload.msg}></LoadModal>
                 <StudentTitle nome={student.cr0bb_nome} />
-                <StudentProgressChart indicators={notas} />
+                <StudentProgressChart indicators={notas} max_nota={(conjunto_notas.length * 2)} />
                 <LegendCard indicators={notas} />
-                <StudentPresence indicators={notas} /> 
+                <StudentPresence indicators={notas} />
                 <ButtonsProps title={'Voltar'} onPress={() => navigation.navigate('FilterScreen')}></ButtonsProps>
-                <Text>{presença.faltas} e {presença.presente}</Text>
             </View>
         </View>
     )
+
 }
 
 /**
