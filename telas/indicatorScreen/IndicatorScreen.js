@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
         padding: '5%',
         marginVertical: '3%',
         padding: '5%',
-        margin: '3%'
+        margin: 0
     },
     titleContainer: {
         justifyContent: 'center',
@@ -46,8 +46,7 @@ const styles = StyleSheet.create({
     chartContainer: {
         alignItems: 'center',
         display: 'flex',
-        padding: '5%',
-        margin: '-10%'
+        margin: '-2.5%'
     },
     progressChartLegend: {
         fontWeight: 'bold',
@@ -95,32 +94,46 @@ const indicators = [
 ];
 
 const StudentPresence = (props) => {
-    const data = [
-        {
-            key: props.indicators[0].label,
-            value: props.indicators[0].value * 100,
-            fill: props.indicators[0].color
-        },
-        {
-            key: props.indicators[1].label,
-            value: props.indicators[1].value * 100,
-            fill: props.indicators[1].color
-        },
-        {
-            key: props.indicators[2].label,
-            value: props.indicators[2].value * 100,
-            fill: props.indicators[2].color
-        },
-        {
-            key: props.indicators[3].label,
-            value: props.indicators[3].value * 100,
-            fill: props.indicators[3].color
-        }
-    ];
+    //substituir estes valores mockados <----------------------------------------------------
+    const diasPresentes = 3
+    const diasPresentesSemAvaliacao = 1
+    const faltas = 2
 
     return (
-        <View style={styles.container}>
-
+        <View style={styles.legendCard}>
+            <View style={styles.legendContainer}>
+                <View
+                style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: 8 / 2,
+                    backgroundColor: "#3d5875",
+                }}
+                />
+                <Text style={styles.legendText}> Dias presentes:  {diasPresentes} </Text>
+            </View>
+            <View style={styles.legendContainer}>
+                <View
+                style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: 8 / 2,
+                    backgroundColor: "#3d5875",
+                }}
+                />
+                <Text style={styles.legendText}> Dias presentes sem avaliação:  {diasPresentesSemAvaliacao} </Text>
+            </View>
+            <View style={styles.legendContainer}>
+                <View
+                style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: 8 / 2,
+                    backgroundColor: "#3d5875",
+                }}
+                />
+                <Text style={styles.legendText}> Faltas:  {faltas} </Text>
+            </View>
         </View>
     );
 }
@@ -193,16 +206,13 @@ const IndicatorScreen = ({ route, navigation }) => {
     const [conjunto_notas, set_conjunto] = useState([])
     const [modalload, setmodaload] = useState({ status: false, msg: "" }) //modal para o pop up de loadscreens
     const [notas, set_notas] = useState([
-        { value: 0, color: '#F0C808', label: 'Relacionamento Interpessoal' },
-        { value: 0, color: '#DD1C1A', label: 'Participação' },
-        { value: 0, color: '#0AD3FF', label: 'Cumprimento de Metas' },
-        { value: 0, color: '#F96900', label: 'Habilidade Técnica' },
+        {value: 0, color: '#F0C808', label: 'Relacionamento Interpessoal' },  
+        {value: 0, color: '#DD1C1A', label: 'Participação' },  
+        {value: 0, color: '#0AD3FF', label: 'Cumprimento de Metas' }, 
+        {value: 0, color: '#F96900', label: 'Habilidade Técnica' },  
     ])
-    const [presença, set_presença] = useState({
-        presente: undefined,
-        faltas: undefined,
-        s_aval: undefined
-    })
+
+    const presenca = 0
 
     useEffect(() => {
         setmodaload({ status: true, msg: 'carregando dados' })
@@ -270,9 +280,9 @@ const IndicatorScreen = ({ route, navigation }) => {
             <View style={styles.viewStyle}>
                 <LoadModal status={modalload.status} msg={modalload.msg}></LoadModal>
                 <StudentTitle nome={student.cr0bb_nome} />
-                <StudentPresence indicators={notas} />
                 <StudentProgressChart indicators={notas} />
                 <LegendCard indicators={notas} />
+                <StudentPresence indicators={notas} /> 
                 <ButtonsProps title={'Voltar'} onPress={() => navigation.navigate('FilterScreen')}></ButtonsProps>
                 <Text>{presença.faltas} e {presença.presente}</Text>
             </View>
